@@ -3,6 +3,7 @@ use std::cmp::Ordering;
 use std::fs;
 use std::fs::FileType;
 
+use chrono::{DateTime, Local};
 use colored::Colorize;
 
 impl Ord for Entry {
@@ -29,6 +30,7 @@ pub struct Entry {
     path: String,
     file_type: FileType,
     size: u64,
+    modified_at: String,
 }
 
 impl Entry {
@@ -40,7 +42,12 @@ impl Entry {
     fn display_long(self) {
         let color = utils::get_color_for_file_type(self.file_type);
         let human_readable_size = utils::get_human_readable_size(self.size);
-        println!("{} {}", human_readable_size, self.path.color(color));
+        println!(
+            "{} {} {}",
+            human_readable_size,
+            self.path.color(color),
+            self.modified_at
+        );
     }
 }
 
@@ -57,11 +64,18 @@ impl Entries {
             .filter_map(Result::ok)
             .filter_map(|filtered_entry| {
                 let file_type = filtered_entry.file_type().ok()?;
-                let file_size = filtered_entry.metadata().ok()?;
+                let metadata = filtered_entry.metadata().ok()?;
+
+                let datetime: DateTime<Local> = metadata.modified().ok()?.into();
+                let modified_at = datetime.format("%b %d %H:%M").to_string();
+
+                let size = metadata.len();
+
                 Some(Entry {
                     path: filtered_entry.file_name().to_string_lossy().to_string(),
                     file_type,
-                    size: file_size.len(),
+                    size,
+                    modified_at,
                 })
             })
             .collect();
