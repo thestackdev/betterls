@@ -1,4 +1,4 @@
 mod models;
 
-pub use models::{Cli, Entry};
+pub use models::{Cli, Entries};
 pub mod utils;
