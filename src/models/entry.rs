@@ -1,7 +1,7 @@
 use crate::utils;
-use std::cmp::Ordering;
-use std::fs;
 use std::fs::FileType;
+use std::fs::{self, Permissions};
+use std::{cmp::Ordering, os::unix::fs::PermissionsExt};
 
 use chrono::{DateTime, Local};
 use colored::Colorize;
@@ -31,6 +31,7 @@ pub struct Entry {
     file_type: FileType,
     size: u64,
     modified_at: String,
+    permissions: String,
 }
 
 impl Entry {
@@ -43,10 +44,11 @@ impl Entry {
         let color = utils::get_color_for_file_type(self.file_type);
         let human_readable_size = utils::get_human_readable_size(self.size);
         println!(
-            "{} {} {}",
+            "{} {} {} {}",
             human_readable_size,
             self.path.color(color),
-            self.modified_at
+            self.modified_at,
+            self.permissions
         );
     }
 }
@@ -66,6 +68,10 @@ impl Entries {
                 let file_type = filtered_entry.file_type().ok()?;
                 let metadata = filtered_entry.metadata().ok()?;
 
+                let permissions_mode = metadata.permissions().mode();
+
+                let permissions = utils::get_formatted_permissions(permissions_mode, file_type);
+
                 let datetime: DateTime<Local> = metadata.modified().ok()?.into();
                 let modified_at = datetime.format("%b %d %H:%M").to_string();
 
@@ -76,6 +82,7 @@ impl Entries {
                     file_type,
                     size,
                     modified_at,
+                    permissions,
                 })
             })
             .collect();
