@@ -34,7 +34,7 @@ pub struct Entry {
 }
 
 impl Entry {
-    fn display(&self) {
+    fn display(self) {
         let color = utils::get_color_for_file_type(self.file_type);
         println!("{}", self.path.color(color));
     }

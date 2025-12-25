@@ -7,7 +7,7 @@ A fast, colorized `ls` replacement built in Rust.
 - Colorized output - directories, symlinks, and files have distinct colors
 - Alphabetically sorted entries
 - Hidden files filtered by default
-- Long format with file sizes
+- Long format with human-readable sizes and modified dates
 
 ## Installation
 
@@ -37,7 +37,7 @@ betterls -la ~/Downloads  # combine flags
 
 ```
 -a, --all      Show hidden files
--l, --long     Display file sizes
+-l, --long     Display sizes and modified dates
 -h, --help     Print help
 -V, --version  Print version
 ```
@@ -46,6 +46,7 @@ betterls -la ~/Downloads  # combine flags
 
 - [clap](https://crates.io/crates/clap) - CLI argument parsing
 - [colored](https://crates.io/crates/colored) - Terminal colors
+- [chrono](https://crates.io/crates/chrono) - Date and time formatting
 
 ## License
 
